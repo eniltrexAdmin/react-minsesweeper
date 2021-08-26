@@ -1,7 +1,7 @@
 import React from 'react';
+import styled from 'styled-components'
 
-class Square extends React.Component {
-    const Square = styled.input`
+const SquareDiv = styled.button`
         background: #fff;
         border: 1px solid #999;
         float: left;
@@ -14,12 +14,14 @@ class Square extends React.Component {
         padding: 0;
         text-align: center;
         width: 34px`
-    ;
+;
+
+export default class Square extends React.Component {
+
 
     render() {
-        return <Square
-            value={this.props.squares[i]}
-            onClick={()=> this.props.onClick(i)}
+        return <SquareDiv
+
         />;
     }
 }
