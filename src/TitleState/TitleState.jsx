@@ -33,7 +33,7 @@ export default class TitleState extends React.Component {
                 </SliderDiv>
                 <NewGameButton
                     text={"NEW GAME"}
-                    onClick={(i) => this.state.startGameFunction()}
+                    onClick={() => this.state.startGameFunction()}
                 />
             </div>
 

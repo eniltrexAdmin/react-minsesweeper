@@ -7,30 +7,33 @@ const SquareRow = styled.div`
 `;
 
 const BoardDiv = styled.div`
+    margin: 0 auto;
     display: block;
-    width: ${props => props.columns * 34}px;
+    width: ${props => props.width}px;
 `;
 
 
 export default class Board extends React.Component {
 
-    renderSquare(i) {
-        return <Square
-            value={"a"}
-
-        />;
-    }
-
     render() {
-        let rows = []
-        for(let x=0; x < this.props.rows; x++) {
-            let tiles = []
-            for(let y=0; y < this.props.columns; y++) {
-                tiles.push(<Square/>);
-            }
-            let row = <SquareRow>{tiles}</SquareRow>
-            rows.push(row)
-        }
-        return (<BoardDiv columns={this.props.columns}>{rows}</BoardDiv>);
+        const board = this.props.gameMap.map((row, stepX) => {
+            const boardRow = row.map((tile, stepY) => {
+                return (
+                    <Square
+                        key = {stepX + stepY}
+                        hasBomb = {tile.hasBomb}
+                        adjacentBombsCounter = {tile.adjacentBombsCounter}
+                        onClick={() => this.props.onClick(stepX, stepY)}
+                        uncovered = {tile.uncovered}
+                    />
+                )
+            });
+            return (
+                <SquareRow key={stepX}>{boardRow}</SquareRow>
+            )
+        });
+
+        // if I had variable square rows in the future, I should get the row with the max squares.
+        return (<BoardDiv width={this.props.gameMap.length * 34}>{board}</BoardDiv>);
     }
 }
