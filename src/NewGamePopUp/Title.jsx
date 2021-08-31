@@ -12,13 +12,13 @@ const TitleSpan = styled.span`
 const TitleDiv = styled.div`
         margin: 0 auto;
         text-align:center;
-        height: 200px;
+        height: 150px;
        `;
 
 export default class Title extends React.Component {
     render() {
         return (
-            <TitleDiv><TitleSpan>MineSweeper</TitleSpan></TitleDiv>
+            <TitleDiv><TitleSpan>Puerquito🐷</TitleSpan></TitleDiv>
         );
     }
 }

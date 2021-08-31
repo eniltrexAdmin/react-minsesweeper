@@ -36,15 +36,17 @@ export default class Square extends React.Component {
     render() {
         if (this.props.uncovered) {
             if (this.props.hasBomb) {
-                return <SquareDiv><span>B</span></SquareDiv>;
+                return <SquareDiv><span>💣</span></SquareDiv>;
             } else {
-                let span;
                 if (this.props.adjacentBombsCounter > 0) {
-                    span=<span>{this.props.adjacentBombsCounter}</span>
+                    return <SquareDiv onMouseDown={this.props.onMouseDown}><span>{this.props.adjacentBombsCounter}</span></SquareDiv>
                 }
-                return <SquareDiv>{span}</SquareDiv>;
+                return <SquareDiv></SquareDiv>;
             }
         }
-        return <CoveredSquareDiv  onClick={this.props.onClick} />
+        if (this.props.markedWithBomb) {
+            return <CoveredSquareDiv onContextMenu={this.props.onContextMenu}><span>⛳</span></CoveredSquareDiv>;
+        }
+        return <CoveredSquareDiv  onClick={this.props.onClick} onContextMenu={this.props.onContextMenu}/>
     }
 }

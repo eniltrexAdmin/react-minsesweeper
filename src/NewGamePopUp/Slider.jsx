@@ -30,16 +30,27 @@ const Track = (props, state) => <StyledTrack {...props} index={state.index} />;
 
 export default class Slider extends React.Component {
 
+    componentDidMount() {
+        this._isMounted = true;
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+
     render() {
         return (
             <div>
                 <span>{this.props.label}</span>
                 <StyledSlider
-                    defaultValue={50}
+                    defaultValue={this.props.min}
                     renderTrack={Track}
                     renderThumb={Thumb}
-                    min={2}
-                    max={100}
+                    min={this.props.min}
+                    max={this.props.max}
+                    // onChange = {(value, thumbIndex) => this.props.onChange(value, thumbIndex)}
+                    onChange = {this.props.onChange}
                 />
             </div>
         );

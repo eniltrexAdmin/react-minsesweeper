@@ -1,47 +1,102 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import TitleState from "./TitleState/TitleState";
+import NewGamePopUp from "./NewGamePopUp/NewGamePopUp";
 import GameState from "./GameState/GameState";
+import Title from "./NewGamePopUp/Title";
 
 
+const NEW_GAME_STATE = "newGameState";
+const PLAY_STATE = "playState";
 
 class Game extends React.Component {
+
     constructor(props) {
         super(props);
-        // this.startGame = this.startGame.bind(this);
-        // this.state = {
-        //     currentState: new TitleState(props, this.startGame),
-        //     currentGameColumns: 20,
-        //     currentGameRows: 20,
-        //     currentGameBombs: 1
-        // }
         this.state = {
-            currentState: new GameState(
-                this.props,
-                20,
-                20,
-                1
-            )
+            currentState: NEW_GAME_STATE,
+            selectedRows: 20,
+            selectedColumns: 20,
+            selectedBombs: 50
         }
+        this.gameElement = React.createRef();
     }
 
-    // startGame() {
-    //     this.setState({
-    //         currentState: new GameState(
-    //             this.props,
-    //             this.state.currentGameColumns,
-    //             this.state.currentGameRows,
-    //             this.state.currentGameBombs
-    //         )
-    //         // currentState: <GameState columns={this.state.columns} rows={this.state.rows} />
-    //
-    //     })
-    // }
+    changeSelectedRows(value) {
+        console.log(value);
+        this.setState({
+            currentState: NEW_GAME_STATE,
+            selectedRows: value,
+            selectedColumns: this.state.selectedColumns,
+            selectedBombs: this.state.selectedBombs
+        })
+        console.log(this.state)
+    }
+
+    changeSelectedColumns(value) {
+        this.setState({
+            currentState: NEW_GAME_STATE,
+            selectedRows: this.state.selectedRows,
+            selectedColumns: value,
+            selectedBombs: this.state.selectedBombs
+        })
+    }
+
+    changeSelectedBombs(value) {
+        this.setState({
+            currentState: NEW_GAME_STATE,
+            selectedRows: this.state.selectedRows,
+            selectedColumns: this.state.selectedColumns,
+            selectedBombs: value
+        })
+    }
+
+    startGame() {
+        this.setState({
+            currentState: PLAY_STATE,
+            selectedRows: this.state.selectedRows,
+            selectedColumns: this.state.selectedColumns,
+            selectedBombs: this.state.selectedBombs
+        })
+        this.gameElement.current.startGame(
+            this.state.selectedRows,
+            this.state.selectedColumns,
+            this.state.selectedBombs
+        )
+    }
+
+    gameOver() {
+        this.setState({
+            currentState: NEW_GAME_STATE,
+            // selectedRows: this.state.selectedRows,
+            // selectedColumns: this.state.selectedColumns,
+            // selectedBombs: this.state.selectedBombs
+        })
+    }
+
 
     render() {
         return (
-            <GameState rows={20} columns={20} bombs={1}/>
-            // this.state.currentState.render()
+            <div>
+                {this.state.currentState === NEW_GAME_STATE ?
+                <NewGamePopUp
+                    startGame = {() => this.startGame()}
+                    selectedRows = {this.state.selectedRows}
+                    selectedColumns = {this.state.selectedColumns}
+                    selectedBombs = {this.state.selectedBombs}
+
+                    changeSelectedRows = {this.changeSelectedRows.bind(this)}
+                    changeSelectedColumns = {this.changeSelectedColumns.bind(this)}
+                    changeSelectedBombs = {this.changeSelectedBombs.bind(this)}
+                />
+                : null}
+
+                <GameState rows={this.state.selectedRows}
+                           columns={this.state.selectedColumns}
+                           bombs={this.state.selectedBombs}
+                           gameOver={this.gameOver.bind(this)}
+                           ref={this.gameElement}
+                />
+            </div>
         );
     }
 }

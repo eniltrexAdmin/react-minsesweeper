@@ -22,8 +22,11 @@ export default class Board extends React.Component {
                     <Square
                         key = {stepX + stepY}
                         hasBomb = {tile.hasBomb}
+                        markedWithBomb = {tile.markedWithBomb}
                         adjacentBombsCounter = {tile.adjacentBombsCounter}
                         onClick={() => this.props.onClick(stepX, stepY)}
+                        onContextMenu={(e) => this.props.onContextMenu(e, stepX, stepY)}
+                        onMouseDown={(e) => this.props.onMouseDown(e, stepX, stepY)}
                         uncovered = {tile.uncovered}
                     />
                 )
@@ -34,6 +37,6 @@ export default class Board extends React.Component {
         });
 
         // if I had variable square rows in the future, I should get the row with the max squares.
-        return (<BoardDiv width={this.props.gameMap.length * 34}>{board}</BoardDiv>);
+        return (<BoardDiv width={this.props.gameMap.[0].length * 34}>{board}</BoardDiv>);
     }
 }
