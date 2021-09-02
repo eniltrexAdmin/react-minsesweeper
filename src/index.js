@@ -16,7 +16,7 @@ class Game extends React.Component {
             currentState: NEW_GAME_STATE,
             selectedRows: 20,
             selectedColumns: 20,
-            selectedBombs: 50
+            selectedBombs: 20
         }
         this.gameElement = React.createRef();
     }
