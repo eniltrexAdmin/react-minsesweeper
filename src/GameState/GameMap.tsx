@@ -7,9 +7,9 @@ export class GameMap {
     readonly rows: number;
     readonly columns: number;
     readonly bombs: number;
-    private readonly bombMap: boolean[][];
     private readonly gameMap: Tile[][];
     userMarkedBombsCounter: number;
+    uncoveredTiles: number;
     private booom: boolean;
 
 
@@ -18,6 +18,7 @@ export class GameMap {
         this.columns = columns;
         this.bombs = Math.min(bombs, rows * columns);
         this.userMarkedBombsCounter = 0;
+        this.uncoveredTiles = 0;
         this.booom = false;
 
         // maybe do something funny here
@@ -25,11 +26,12 @@ export class GameMap {
         //     throw new Error("haha very funny, now wait for an eternity")
         // }
 
-        this.bombMap = this.generateBombMapFuckWay()
-        this.addBombsToBombMap()
-        this.gameMap = this.generateMap()
-        this.addAdjacentTiles()
+        let bombMapWithoutBombs = GameMap.generateBombMapFuckWay(rows, columns)
+        let bombMapWithBombs = GameMap.addBombsToBombMap(bombMapWithoutBombs, rows, columns, bombs)
+        this.gameMap =  this.generateMap(bombMapWithBombs)
+        this.addAdjacentTiles(this.gameMap)
     }
+
 
     getGameMap():Tile[][]
     {
@@ -41,44 +43,53 @@ export class GameMap {
         return this.booom
     }
 
-    private generateBombMapFuckWay():boolean[][] {
-        let rows;
+    getIsGameWon(): boolean
+    {
+        return this.uncoveredTiles >= (this.rows * this.columns) - this.bombs;
+    }
+
+    private static generateBombMapFuckWay(rows:number, columns:number):boolean[][] {
         let bombMap = [];
-        for (rows = 0; rows < this.rows; rows++) {
-            // can't pass an array inside fill, but a single value we can.
-            bombMap[rows] = new Array<boolean>(this.columns).fill(false)
+        for (let rowsIndex = 0; rowsIndex < rows; rowsIndex++) {
+            let arrayRow = [];
+            for (let columnsIndex = 0; columnsIndex < columns; columnsIndex++) {
+                arrayRow.push(false)
+            }
+
+            bombMap[rowsIndex] = arrayRow;
         }
         return bombMap;
     }
 
-    private addBombsToBombMap(): void {
-        let bombRow = GameMap.getRandomInt(this.rows)
-        let bombColumn = GameMap.getRandomInt(this.columns)
-        for (let bombsInMap = 0; bombsInMap < this.bombs; bombsInMap++) {
+    private static addBombsToBombMap(bombMap: boolean[][], rows:number, columns:number, bombs:number ): boolean[][] {
+        let bombRow = GameMap.getRandomInt(rows)
+        let bombColumn = GameMap.getRandomInt(columns)
+        for (let bombsInMap = 0; bombsInMap < bombs; bombsInMap++) {
             // keep searching until a position doesn't have one.
-            while(this.bombMap[bombRow][bombColumn]) {
-                bombRow = GameMap.getRandomInt(this.rows);
-                bombColumn = GameMap.getRandomInt(this.columns)
+            while(bombMap[bombRow][bombColumn]) {
+                bombRow = GameMap.getRandomInt(rows);
+                bombColumn = GameMap.getRandomInt(columns)
             }
-            this.bombMap[bombRow][bombColumn] = true;
+            bombMap[bombRow][bombColumn] = true;
         }
+        return bombMap
     }
 
-    private generateMap():Tile[][] {
-        return this.bombMap.map((row:boolean[], rowIndex) => {
+    private generateMap(bombMap:boolean[][]):Tile[][] {
+        return bombMap.map((row:boolean[], rowIndex) => {
             return row.map((hasBomb:boolean, columnIndex) => {
                 return new Tile(hasBomb, rowIndex, columnIndex)
             });
         });
     }
 
-    private addAdjacentTiles():void {
-        this.gameMap.map((row:Tile[]) => {
-            return row.map((tile:Tile) => {
-                let adjacentTiles = this.getAdjacentTiles(tile);
+    private addAdjacentTiles(aGameMap: Tile[][]):void {
+        aGameMap.map((row:Tile[], rowStep) => {
+            return row.map((tile:Tile, columnStep) => {
+                let adjacentTiles = this.getAdjacentTiles(tile, aGameMap);
                 // not sure map is the best way, it forces to return something but Iam just modifiyns something
                 adjacentTiles.map(adjacentTile => {
-                    tile.addAdjacentTile(adjacentTile)
+                     tile.addAdjacentTile(adjacentTile)
                     return true;
                 })
                 return true;
@@ -87,33 +98,33 @@ export class GameMap {
     }
 
     // this one can be public
-    getAdjacentTiles(aTile:Tile):Tile[] {
+    getAdjacentTiles(aTile:Tile, aGameMap:Tile[][]):Tile[] {
         let adjacentTiles = [];
         // get previous row tiles
         if (aTile.row - 1 >= 0) {
             if (aTile.column - 1 >= 0) {
-                adjacentTiles.push(this.gameMap[aTile.row-1][aTile.column-1]);
+                adjacentTiles.push(aGameMap[aTile.row-1][aTile.column-1]);
             }
-            adjacentTiles.push(this.gameMap[aTile.row-1][aTile.column]);
-            if (aTile.column + 1 < this.gameMap[aTile.row-1].length) {
-                adjacentTiles.push(this.gameMap[aTile.row-1][aTile.column+1]);
+            adjacentTiles.push(aGameMap[aTile.row-1][aTile.column]);
+            if (aTile.column + 1 < aGameMap[aTile.row-1].length) {
+                adjacentTiles.push(aGameMap[aTile.row-1][aTile.column+1]);
             }
         }
         // get current row
         if (aTile.column - 1 >= 0) {
-            adjacentTiles.push(this.gameMap[aTile.row][aTile.column-1]);
+            adjacentTiles.push(aGameMap[aTile.row][aTile.column-1]);
         }
-        if (aTile.column + 1 < this.gameMap[aTile.row].length) {
-            adjacentTiles.push(this.gameMap[aTile.row][aTile.column+1]);
+        if (aTile.column + 1 < aGameMap[aTile.row].length) {
+            adjacentTiles.push(aGameMap[aTile.row][aTile.column+1]);
         }
         // get next row tiles
-        if (aTile.row + 1 < this.gameMap.length) {
+        if (aTile.row + 1 < aGameMap.length) {
             if (aTile.column - 1 >= 0) {
-                adjacentTiles.push(this.gameMap[aTile.row+1][aTile.column-1]);
+                adjacentTiles.push(aGameMap[aTile.row+1][aTile.column-1]);
             }
-            adjacentTiles.push(this.gameMap[aTile.row+1][aTile.column]);
-            if (aTile.column + 1 < this.gameMap[aTile.row+1].length) {
-                adjacentTiles.push(this.gameMap[aTile.row+1][aTile.column+1]);
+            adjacentTiles.push(aGameMap[aTile.row+1][aTile.column]);
+            if (aTile.column + 1 < aGameMap[aTile.row+1].length) {
+                adjacentTiles.push(aGameMap[aTile.row+1][aTile.column+1]);
             }
         }
         return adjacentTiles;
@@ -134,7 +145,7 @@ export class GameMap {
 
     uncoverTile(row:number, column:number): Tile[][] {
         let tileToUncover = this.gameMap[row][column]
-        tileToUncover.uncoverTile()
+        this.uncoveredTiles += tileToUncover.uncoverTile()
         if (tileToUncover.hasBomb) {
             this.booom = true;
         }
@@ -178,7 +189,7 @@ export class GameMap {
             if (surroundingTile.hasBomb && !surroundingTile.markedWithBomb) {
                 this.booom = true;
             }
-            surroundingTile.uncoverTile()
+            this.uncoveredTiles += surroundingTile.uncoverTile()
         }
         return this.gameMap.slice()
     }

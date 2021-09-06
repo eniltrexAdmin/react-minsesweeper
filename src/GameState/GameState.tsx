@@ -3,47 +3,73 @@ import Board from "./Board";
 import StatusBar from "./StatusBar";
 import {GameMap} from "./GameMap";
 import {Tile} from "./Tile";
+import styled from "styled-components";
+
+
+const SmileyDiv = styled.div`
+        background: #eee;
+        border: 1px solid #999;
+        font-size: 24px;
+        font-weight: bold;
+        line-height: 34px;
+        height: 34px;
+        padding: 0;
+        text-align: center;
+        width: 34px`
+;
 
 interface GameStateProps {
-    rows:number;
-    columns:number;
-    bombs:number;
-    gameOverFunction: Function
+    displayNewGamePopUp: Function
+
+    rows:number
+    columns: number
+    bombs: number
 }
 
 interface GameStateState {
-    gameMapObject: GameMap
     currentGameMap: Tile[][]
     bombsCounter: number
     gameOver: boolean
+    gameWon: boolean
+    gameMapObject: GameMap
 }
 
 export default class GameState extends React.Component<GameStateProps, GameStateState> {
 
+
     constructor(props: GameStateProps) {
         super(props);
-        const gameMapObject = new GameMap(this.props.rows, this.props.columns, this.props.bombs);
+        const gameMapObject = new GameMap(props.rows, props.columns,props.bombs);
+
         this.state = {
+            gameWon: false,
             gameOver: false,
             gameMapObject: gameMapObject,
             currentGameMap: gameMapObject.getGameMap(),
-            bombsCounter: this.props.bombs
+            bombsCounter: gameMapObject.bombs
         }
-        this.startGame(this.props.rows, this.props.columns, this.props.bombs)
     }
 
-    startGame(rows:number , columns:number, bombs:number) {
-        const gameMapObject = new GameMap(rows, columns, bombs);
+    startGame() {
+        this.setState(function(state, props) {
+            let gameMapObject = new GameMap(props.rows, props.columns,props.bombs);
+            return {
+                gameWon: false,
+                gameOver: false,
+                gameMapObject: gameMapObject,
+                currentGameMap: gameMapObject.getGameMap(),
+                bombsCounter: gameMapObject.bombs
+            }
+         }
+        );
+    }
+
+    gameWon() {
+        alert("you win!😃");
         this.setState({
-            gameOver: false,
-            gameMapObject: gameMapObject,
-            currentGameMap: gameMapObject.getGameMap(),
-            bombsCounter: bombs
+            gameWon: true,
+            // currentGameMap: this.state.gameMapObject.revealAllMap(),
         });
-    }
-
-    newGame() {
-        this.props.gameOverFunction();
     }
 
     gameOver() {
@@ -55,15 +81,19 @@ export default class GameState extends React.Component<GameStateProps, GameState
     }
 
     handleClick(x:number, y:number) {
-        if (this.state.currentGameMap[x][y].hasBomb) {
-           this.gameOver()
-        }
         this.setState({
             currentGameMap: this.state.gameMapObject.uncoverTile(x, y),
             bombsCounter: this.state.bombsCounter
         });
+        this.userActionChecks();
+    }
+
+    private userActionChecks() {
         if (this.state.gameMapObject.getIsGameOver()) {
             this.gameOver();
+        }
+        if (this.state.gameMapObject.getIsGameWon()) {
+            this.gameWon();
         }
     }
 
@@ -80,15 +110,19 @@ export default class GameState extends React.Component<GameStateProps, GameState
         this.setState({
             currentGameMap: this.state.gameMapObject.uncoverSurroundingTiles(x, y),
         });
-        if (this.state.gameMapObject.getIsGameOver()) {
-            this.gameOver();
-        }
+       this.userActionChecks();
     }
 
     render() {
+        let smiley = this.state.gameWon ? <SmileyDiv>😃</SmileyDiv> : null
         return (
             <div className="game" >
-                <StatusBar bombsCounter = {this.state.bombsCounter} />
+                <StatusBar
+                    bombsCounter = {this.state.bombsCounter}
+                    // gameOver = {this.props.gameOverFunction}
+                    gameOver = {()=>this.props.displayNewGamePopUp()}
+                />
+                {smiley}
                 <div className="game-board">
                     <Board
                         gameMap = {this.state.currentGameMap}

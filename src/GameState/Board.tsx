@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Square from "./Square";
 import {Tile} from "./Tile";
 import styled from "styled-components";
@@ -22,6 +22,8 @@ interface BoardProps {
 }
 
 export default function Board(props:BoardProps) {
+    // const [gameMap, setGameMap] = useState(props.gameMap);
+
     const board = props.gameMap.map((row:Tile[], rowIndex: number) => {
         const boardRow = row.map((tile:Tile, columnIndex:number) => {
             return (

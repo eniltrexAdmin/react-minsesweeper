@@ -17,26 +17,31 @@ export class Tile {
         this.adjacentTiles = []
     }
 
-    addAdjacentTile(Tile:Tile) {
-        this.adjacentTiles.push(Tile);
-        if (Tile.hasBomb) {
+    addAdjacentTile(adjacentTile:Tile): void {
+        this.adjacentTiles.push(adjacentTile);
+        if (adjacentTile.hasBomb) {
             this.adjacentBombsCounter++
         }
     }
 
-    uncoverTile() {
+    uncoverTile(): number {
         if (! this.markedWithBomb) {
-            this.uncovered = true;
-            // chain Reaction.
-            if (this.adjacentBombsCounter === 0) {
-                // chain reaction
-                for (let i = 0; i < this.adjacentTiles.length; i++) {
-                    if (!this.adjacentTiles[i].uncovered) {
-                        this.adjacentTiles[i].uncoverTile()
+            if ( ! this.uncovered) {
+                let uncoveredTiles = 1;
+                this.uncovered = true;
+                // chain Reaction.
+                if (this.adjacentBombsCounter === 0) {
+                    // chain reaction
+                    for (let i = 0; i < this.adjacentTiles.length; i++) {
+                        if (!this.adjacentTiles[i].uncovered) {
+                            uncoveredTiles += this.adjacentTiles[i].uncoverTile()
+                        }
                     }
                 }
+                return uncoveredTiles;
             }
         }
+        return 0;
     }
 }
 
