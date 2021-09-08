@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import NewGamePopUp from "./NewGamePopUp/NewGamePopUp";
 import GameState from "./GameState/GameState";
-import {GameMap} from "./GameState/GameMap";
 
 
 const NEW_GAME_STATE = "newGameState";
@@ -32,22 +31,28 @@ class Game extends React.Component<appProps,appState> {
 
 
 
-    changeSelectedRows(value:number) {
-        this.setState({
-            selectedRows: value,
-        })
+    changeSelectedRows(value:number|readonly number[], index:number): void {
+        if(typeof value ==="number") {
+            this.setState({
+                selectedRows: value,
+            })
+        }
     }
 
-    changeSelectedColumns(value:number) {
-        this.setState({
-            selectedColumns: value,
-        })
+    changeSelectedColumns(value:number|readonly number[], index:number): void {
+        if(typeof value ==="number") {
+            this.setState({
+                selectedColumns: value,
+            })
+        }
     }
 
-    changeSelectedBombs(value:number) {
-        this.setState({
-            selectedBombs: value
-        })
+    changeSelectedBombs(value:number|readonly number[], index:number): void {
+        if(typeof value ==="number") {
+            this.setState({
+                selectedBombs: value
+            })
+        }
     }
 
     startGame() {

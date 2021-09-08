@@ -2,11 +2,6 @@ import React from 'react';
 import styled from 'styled-components'
 import {Tile} from "./Tile";
 
-// interface UncoveredSquareDivProps {
-//     // onMouseDown?: (e: React.MouseEvent, x:number, y:number) => React.MouseEvent,
-//     onMouseDown?: Function
-// }
-
 const SquareDiv = styled.button`
         background: #fff;
         border: 1px solid #999;
@@ -39,11 +34,6 @@ const CoveredSquareDiv = styled.button`
 
 interface SquareProps {
     tile: Tile;
-    // onClick: (stepX:number, stepY:number)=>void;
-    // onContextMenu: (e:React.MouseEvent, stepX:number, stepY:number)=>any;
-    // onMouseDown: (e:React.MouseEvent, stepX:number, stepY:number)=>any;
-    // onContextMenu: Function;
-    // onMouseDown: Function;
     onClick: React.MouseEventHandler<HTMLElement>;
     onContextMenu: React.MouseEventHandler<HTMLElement>;
     onMouseDown: React.MouseEventHandler<HTMLElement>;

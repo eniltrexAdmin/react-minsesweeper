@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import Square from "./Square";
 import {Tile} from "./Tile";
 import styled from "styled-components";
