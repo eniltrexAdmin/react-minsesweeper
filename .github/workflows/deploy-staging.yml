@@ -4,12 +4,14 @@ on:
     branches:
       - develop
 jobs:
-  build:
+  deploy-staging:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - name: NPM install
+        run: npm install
       - name: NPM build
         run: npm run build
       - name: List files in the repository
