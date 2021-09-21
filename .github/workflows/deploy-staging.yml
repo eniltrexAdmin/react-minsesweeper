@@ -25,4 +25,5 @@ jobs:
           aws-region: eu-west-3
       - name: Copy files to s3 bucket
         run: |
-          aws s3 sync build/ s3://react-minesweeper-staging
+          aws s3 sync build/ s3://react-minesweeper-staging/public/
+          aws s3 cp build/index.html s3://react-minesweeper-staging/
